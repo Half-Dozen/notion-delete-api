@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { Client } from "@notionhq/client";
 import { tasks } from "@trigger.dev/sdk/v3";
 
 // Database IDs configuration
@@ -17,7 +16,7 @@ interface DeleteRequest {
   databases?: (keyof typeof NOTION_DATABASES)[];
   dryRun?: boolean;
   filter?: any;
-  archiveInstead?: boolean; // New option to archive instead of delete
+  archiveInstead?: boolean;
 }
 
 export async function POST(request: Request) {
@@ -36,19 +35,16 @@ export async function POST(request: Request) {
     // Use environment variable token if not provided
     const notionToken = body.notionToken || process.env.NOTION_TOKEN;
 
-    // Initialize Notion client to check version
-    const notion = new Client({
-      auth: notionToken,
-      notionVersion: "2022-06-28" // Using a stable version
-    });
-
-    // Trigger the archival/deletion task
-    const taskResult = await tasks.trigger("delete-notion-items", {
-      notionToken,
-      databases: body.databases || Object.keys(NOTION_DATABASES),
-      dryRun: body.dryRun ?? true, // Default to dry run for safety
-      filter: body.filter,
-      archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
+    // Trigger the task in Trigger.dev
+    const taskResult = await tasks.send({
+      name: "delete-notion-items",
+      payload: {
+        notionToken,
+        databases: body.databases || Object.keys(NOTION_DATABASES),
+        dryRun: body.dryRun ?? true, // Default to dry run for safety
+        filter: body.filter,
+        archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
+      }
     });
 
     // Return immediately with the task ID
