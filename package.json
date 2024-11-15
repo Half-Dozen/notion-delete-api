@@ -12,6 +12,7 @@
     "@trigger.dev/sdk": "^3.0.0",
     "@notionhq/client": "^2.2.13",
     "next": "14.0.3",
+    "p-retry": "^5.1.2",
     "react": "^18",
     "react-dom": "^18"
   },
