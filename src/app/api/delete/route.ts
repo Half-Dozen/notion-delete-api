@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { tasks } from "@trigger.dev/sdk/v3";
 
 // Database IDs configuration
 const NOTION_DATABASES = {
@@ -35,14 +34,33 @@ export async function POST(request: Request) {
     // Use environment variable token if not provided
     const notionToken = body.notionToken || process.env.NOTION_TOKEN;
 
-    // Trigger the task in Trigger.dev
-    const taskResult = await tasks.trigger("delete-notion-items", {
-      notionToken,
-      databases: body.databases || Object.keys(NOTION_DATABASES),
-      dryRun: body.dryRun ?? true, // Default to dry run for safety
-      filter: body.filter,
-      archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
-    });
+    // Trigger the task via Trigger.dev API
+    const response = await fetch(
+      'https://api.trigger.dev/api/v1/tasks/delete-notion-items/trigger',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.TRIGGER_SECRET_KEY}`
+        },
+        body: JSON.stringify({
+          payload: {
+            notionToken,
+            databases: body.databases || Object.keys(NOTION_DATABASES),
+            dryRun: body.dryRun ?? true, // Default to dry run for safety
+            filter: body.filter,
+            archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to trigger task: ${error}`);
+    }
+
+    const taskResult = await response.json();
 
     // Return immediately with the task ID
     return NextResponse.json({
