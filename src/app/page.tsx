@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-6">Notion Delete API</h1>
+      <h1 className="text-3xl font-bold mb-6">Notion Archive API</h1>
       
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Usage</h2>
@@ -13,6 +13,7 @@ export default function Home() {
   "notionToken": "your-notion-token",
   "databases": ["QBO_PROJECTS", "BUYER_INFORMATION"],  // Optional
   "dryRun": true,  // Optional, defaults to true
+  "archiveInstead": true,  // Optional, defaults to true (move to trash)
   "filter": {  // Optional
     "property": "Status",
     "select": {
@@ -34,9 +35,10 @@ export default function Home() {
         <h3 className="text-xl font-semibold mb-2">Response:</h3>
         <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
 {`{
-  "message": "Task triggered successfully",
+  "message": "Task triggered successfully (archiving items)",
   "taskId": "run_abc123",
   "dryRun": true,
+  "action": "archive",
   "databases": ["QBO_PROJECTS", "BUYER_INFORMATION"]
 }`}
         </pre>
@@ -47,8 +49,9 @@ export default function Home() {
         <ul className="list-disc list-inside">
           <li>Always test with <code className="bg-gray-100 px-2 py-1 rounded">dryRun: true</code> first</li>
           <li>The task runs asynchronously - use the taskId to check progress</li>
-          <li>Deletion cannot be undone</li>
+          <li>Items are moved to trash by default (<code className="bg-gray-100 px-2 py-1 rounded">archiveInstead: true</code>)</li>
           <li>Rate limits are automatically respected</li>
+          <li>Permanent deletion is not supported by the Notion API</li>
         </ul>
       </section>
     </main>
