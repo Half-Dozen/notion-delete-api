@@ -3,9 +3,5 @@
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "TRIGGER_SECRET_KEY": "@trigger_secret_key",
-    "NOTION_TOKEN": "@notion_token"
-  }
+  "outputDirectory": ".next"
 }
