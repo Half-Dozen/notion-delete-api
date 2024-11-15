@@ -55,7 +55,6 @@ const createNotionClient = (token: string) => {
 // Main task definition
 export const deleteNotionItems = task({
   id: "delete-notion-items",
-  version: "1.0.0",
   run: async (payload: DeleteNotionItemsPayload, { logger }) => {
     // Log the start of the task
     logger.info("Starting task", { 
