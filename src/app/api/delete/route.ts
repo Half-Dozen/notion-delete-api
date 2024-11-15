@@ -36,15 +36,12 @@ export async function POST(request: Request) {
     const notionToken = body.notionToken || process.env.NOTION_TOKEN;
 
     // Trigger the task in Trigger.dev
-    const taskResult = await tasks.send({
-      name: "delete-notion-items",
-      payload: {
-        notionToken,
-        databases: body.databases || Object.keys(NOTION_DATABASES),
-        dryRun: body.dryRun ?? true, // Default to dry run for safety
-        filter: body.filter,
-        archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
-      }
+    const taskResult = await tasks.trigger("delete-notion-items", {
+      notionToken,
+      databases: body.databases || Object.keys(NOTION_DATABASES),
+      dryRun: body.dryRun ?? true, // Default to dry run for safety
+      filter: body.filter,
+      archiveInstead: body.archiveInstead ?? true // Default to archive instead of delete
     });
 
     // Return immediately with the task ID
