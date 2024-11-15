@@ -1,5 +1,5 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { Client } from "@notionhq/client";
+import { Client, APIResponseError } from "@notionhq/client";
 import pRetry from "p-retry";
 
 // Database IDs configuration
@@ -30,8 +30,10 @@ const createNotionClient = (token: string) => {
     return pRetry(operation, {
       retries: 5,
       onFailedAttempt: async (error) => {
-        if (error.name === "APIResponseError" && error.status === 429) {
-          const retryAfter = parseInt(error.headers?.["retry-after"] || "5");
+        const apiError = error?.cause as APIResponseError;
+        if (apiError?.code === 'rate_limited') {
+          // Default to 5 seconds if no retry-after header
+          const retryAfter = parseInt(apiError.headers?.["retry-after"] || "5", 10);
           await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
         }
       },
