@@ -10,11 +10,16 @@ const NOTION_DATABASES = {
 } as const;
 
 // Type for the request body
+interface NotionFilter {
+  property: string;
+  [key: string]: unknown;
+}
+
 interface DeleteRequest {
   notionToken?: string;
   databases?: (keyof typeof NOTION_DATABASES)[];
   dryRun?: boolean;
-  filter?: any;
+  filter?: NotionFilter;
   archiveInstead?: boolean;
 }
 
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
 
     // Trigger the task via Trigger.dev API
     const response = await fetch(
-      'https://api.trigger.dev/api/v1/tasks/delete-notion-items/trigger',
+      'https://trigger.halfdozen.co/api/v1/tasks/delete-notion-items/trigger',
       {
         method: 'POST',
         headers: {
@@ -70,10 +75,12 @@ export async function POST(request: Request) {
       databases: body.databases || Object.keys(NOTION_DATABASES),
       action: body.archiveInstead ?? true ? 'archive' : 'delete'
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error triggering task:', error);
+    // Type guard to check if error is an Error object
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
