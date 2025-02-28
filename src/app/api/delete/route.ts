@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
     // Trigger the task via Trigger.dev API
     const response = await fetch(
-      'https://trigger.halfdozen.co/api/v1/tasks/delete-notion-items/trigger',
+      'https://api.trigger.dev/api/v1/projects/proj_etyyvdcmcvcnxepdwdba/tasks/delete-notion-items/trigger',
       {
         method: 'POST',
         headers: {
